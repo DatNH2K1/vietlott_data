@@ -46,3 +46,7 @@ app.*.map.json
 
 # Kotlin compiler caches
 /android/.kotlin/
+
+# Environment configurations
+.env
+

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -30,11 +32,38 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            // Load from .env file if it exists
+            val envFile = rootProject.file("../.env")
+            val envProps = Properties()
+            if (envFile.exists()) {
+                envFile.inputStream().use { envProps.load(it) }
+                println("BMAD: Loaded signing config from ${envFile.absolutePath}")
+            } else {
+                println("BMAD: .env file not found at ${envFile.absolutePath}")
+            }
+
+            val keystoreFileName: String? = System.getenv("ANDROID_KEYSTORE_FILE") ?: envProps.getProperty("ANDROID_KEYSTORE_FILE")
+            if (!keystoreFileName.isNullOrEmpty()) {
+                storeFile = file(keystoreFileName)
+                storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: envProps.getProperty("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("ANDROID_KEY_ALIAS") ?: envProps.getProperty("ANDROID_KEY_ALIAS")
+                keyPassword = System.getenv("ANDROID_KEY_PASSWORD") ?: envProps.getProperty("ANDROID_KEY_PASSWORD")
+            } else {
+                // Fallback to debug for local builds if no env vars or .env file
+                val debugKeystore = signingConfigs.getByName("debug")
+                storeFile = debugKeystore.storeFile
+                storePassword = debugKeystore.storePassword
+                keyAlias = debugKeystore.keyAlias
+                keyPassword = debugKeystore.keyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
@@ -42,3 +71,4 @@ android {
 flutter {
     source = "../.."
 }
+
