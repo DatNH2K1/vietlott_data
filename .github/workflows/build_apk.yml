@@ -36,10 +36,39 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Setup Signing Configuration
+        env:
+          APP_SIGNING_CONFIG: ${{ secrets.APP_SIGNING_CONFIG }}
         run: |
-          echo "${{ secrets.APP_SIGNING_CONFIG }}" > .env
-          K_BASE64=$(grep "^ANDROID_KEYSTORE_BASE64=" .env | cut -d'=' -f2-)
-          echo "$K_BASE64" | base64 --decode > android/app/release.keystore
+          # Write secret to temp file for parsing
+          echo "$APP_SIGNING_CONFIG" > /tmp/signing_raw.env
+
+          # Decode base64 keystore
+          KEYSTORE_PATH="$GITHUB_WORKSPACE/android/app/release.keystore"
+          K_BASE64=$(grep "^ANDROID_KEYSTORE_BASE64=" /tmp/signing_raw.env | cut -d'=' -f2-)
+          echo "$K_BASE64" | base64 --decode > "$KEYSTORE_PATH"
+
+          K_PASSWORD=$(grep "^ANDROID_KEYSTORE_PASSWORD=" /tmp/signing_raw.env | cut -d'=' -f2-)
+          K_ALIAS=$(grep "^ANDROID_KEY_ALIAS=" /tmp/signing_raw.env | cut -d'=' -f2-)
+          K_KEY_PASSWORD=$(grep "^ANDROID_KEY_PASSWORD=" /tmp/signing_raw.env | cut -d'=' -f2-)
+
+          # Validate – fail early if any required key is missing
+          if [ -z "$K_BASE64" ] || [ -z "$K_PASSWORD" ] || [ -z "$K_ALIAS" ] || [ -z "$K_KEY_PASSWORD" ]; then
+            echo "ERROR: APP_SIGNING_CONFIG is missing one or more required keys."
+            echo "Required: ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD"
+            exit 1
+          fi
+
+          # Write clean .env (absolute keystore path + credentials, no base64)
+          {
+            printf 'ANDROID_KEYSTORE_FILE=%s\n' "$KEYSTORE_PATH"
+            printf 'ANDROID_KEYSTORE_PASSWORD=%s\n' "$K_PASSWORD"
+            printf 'ANDROID_KEY_ALIAS=%s\n' "$K_ALIAS"
+            printf 'ANDROID_KEY_PASSWORD=%s\n' "$K_KEY_PASSWORD"
+          } > .env
+
+          # Clean up temp file
+          rm -f /tmp/signing_raw.env
+          echo "Signing config ready at $KEYSTORE_PATH"
 
       - name: Build APK
         run: flutter build apk --release
