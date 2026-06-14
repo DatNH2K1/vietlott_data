@@ -1,30 +1,53 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:vietlott_data/app/app.dart';
+import 'package:vietlott_data/services/settings/app_settings.dart';
 
-import 'package:vietlott_data/main.dart';
+class TestAssetBundle extends CachingAssetBundle {
+  @override
+  Future<ByteData> load(String key) async {
+    if (key.endsWith('vi.json') || key.endsWith('en.json')) {
+      const jsonStr = '''
+      {
+        "appTitle": "Vietlott Analytics",
+        "settings": "Cài đặt",
+        "theme": "Giao diện",
+        "language": "Ngôn ngữ",
+        "themeLightRed": "Đỏ Vietlott",
+        "themeDarkSlate": "Tối Hiện đại",
+        "themeGoldLuxury": "Vàng Sang trọng",
+        "langVi": "Tiếng Việt",
+        "langEn": "English",
+        "close": "Đóng",
+        "reSync": "Đồng bộ lại",
+        "syncing": "Đang đồng bộ dữ liệu từ Git..."
+      }
+      ''';
+      return ByteData.view(Uint8List.fromList(utf8.encode(jsonStr)).buffer);
+    }
+    throw FlutterError('Asset not found: $key');
+  }
+}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Vietlott Analytics Page displays app bar title', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      DefaultAssetBundle(
+        bundle: TestAssetBundle(),
+        child: AppSettingsProvider(
+          notifier: AppSettings(),
+          child: const MyApp(),
+        ),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Wait for AppLocalizations to finish loading
+    await tester.pumpAndSettle();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Vietlott Analytics'), findsOneWidget);
   });
 }

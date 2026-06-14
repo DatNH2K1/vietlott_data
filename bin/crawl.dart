@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:vietlott_data/models/lottery_draw_model.dart';
-import 'package:vietlott_data/service/crawler/crawler_adapter.dart';
+import 'package:vietlott_data/services/crawler/crawler_service.dart';
 
 void main(List<String> args) async {
   if (args.isEmpty || (args[0] != 'all' && args[0] != 'missing')) {
@@ -9,20 +9,24 @@ void main(List<String> args) async {
     exit(1);
   }
 
-  final String mode = args[0];
-  final List<String> products = LotteryCrawler.supportedProducts;
+  final mode = args[0];
+  final products = LotteryCrawler.supportedProducts;
 
   if (products.isEmpty) {
     print('Error: No crawler adapters registered in LotteryCrawler.');
     exit(1);
   }
 
-  print('Starting crawl process in "$mode" mode for products: ${products.join(", ")}');
+  print(
+    'Starting crawl process in "$mode" mode for products: ${products.join(", ")}',
+  );
 
   for (final targetProduct in products) {
-    final BaseCrawlerAdapter? adapter = LotteryCrawler.getAdapter(targetProduct);
+    final adapter = LotteryCrawler.getAdapter(targetProduct);
     if (adapter == null) {
-      print('Error: Crawler adapter not found for product: $targetProduct. Skipping.');
+      print(
+        'Error: Crawler adapter not found for product: $targetProduct. Skipping.',
+      );
       continue;
     }
 
@@ -31,8 +35,8 @@ void main(List<String> args) async {
     print('======================================');
 
     final jsonlFile = File('data/${adapter.productName}.jsonl');
-    final Set<String> existingIds = {};
-    final List<LotteryDrawModel> existingDraws = [];
+    final existingIds = <String>{};
+    final existingDraws = <LotteryDrawModel>[];
 
     // Read existing draws if in missing mode and file exists
     if (mode == 'missing' && await jsonlFile.exists()) {
@@ -41,7 +45,7 @@ void main(List<String> args) async {
       for (final line in lines) {
         if (line.trim().isEmpty) continue;
         try {
-          final Map<String, dynamic> jsonMap = jsonDecode(line);
+          final jsonMap = jsonDecode(line) as Map<String, dynamic>;
           final draw = LotteryDrawModel(
             id: jsonMap['id'] as String,
             date: jsonMap['date'] as String,
@@ -58,23 +62,29 @@ void main(List<String> args) async {
     }
 
     print('Crawling in "$mode" mode...');
-    final List<LotteryDrawModel> newDraws = [];
-    int pageIndex = 0;
-    bool caughtUp = false;
+    final newDraws = <LotteryDrawModel>[];
+    var pageIndex = 0;
+    var caughtUp = false;
 
     while (true) {
       print('[$targetProduct] Fetching page $pageIndex...');
       final draws = await adapter.fetchPage(pageIndex);
       if (draws.isEmpty) {
-        print('[$targetProduct] No more draws returned on page $pageIndex. Stopping.');
+        print(
+          '[$targetProduct] No more draws returned on page $pageIndex. Stopping.',
+        );
         break;
       }
 
-      print('[$targetProduct] Fetched ${draws.length} draws from page $pageIndex.');
+      print(
+        '[$targetProduct] Fetched ${draws.length} draws from page $pageIndex.',
+      );
 
       for (final draw in draws) {
         if (mode == 'missing' && existingIds.contains(draw.id)) {
-          print('[$targetProduct] Found existing draw ID ${draw.id}. Caught up with history.');
+          print(
+            '[$targetProduct] Found existing draw ID ${draw.id}. Caught up with history.',
+          );
           caughtUp = true;
           break;
         }
@@ -87,10 +97,10 @@ void main(List<String> args) async {
 
       pageIndex++;
       // Tiny delay between requests to be polite to the server
-      await Future.delayed(const Duration(milliseconds: 300));
+      await Future<void>.delayed(const Duration(milliseconds: 300));
     }
 
-    final List<LotteryDrawModel> finalDraws = [];
+    final finalDraws = <LotteryDrawModel>[];
     if (mode == 'all') {
       finalDraws.addAll(newDraws);
     } else {
@@ -100,11 +110,15 @@ void main(List<String> args) async {
     }
 
     if (finalDraws.isEmpty) {
-      print('[$targetProduct] No data fetched. Please check connection/endpoint.');
+      print(
+        '[$targetProduct] No data fetched. Please check connection/endpoint.',
+      );
       continue;
     }
 
-    print('[$targetProduct] Total draws compiled: ${finalDraws.length} (New: ${newDraws.length}, Existing: ${existingDraws.length}).');
+    print(
+      '[$targetProduct] Total draws compiled: ${finalDraws.length} (New: ${newDraws.length}, Existing: ${existingDraws.length}).',
+    );
 
     // Ensure data directory exists
     final dataDir = Directory('data');
@@ -113,15 +127,15 @@ void main(List<String> args) async {
     }
 
     print('[$targetProduct] Writing to ${jsonlFile.path}...');
-    final sink = jsonlFile.openWrite(mode: FileMode.write);
+    final sink = jsonlFile.openWrite();
     for (final draw in finalDraws) {
-      sink.write(draw.toJsonLString() + '\n');
+      sink.write('${draw.toJsonLString()}\n');
     }
     await sink.close();
 
     print('\n--- SAMPLE OUTPUT (${adapter.productName} - First 3 draws) ---');
-    final int previewCount = finalDraws.length < 3 ? finalDraws.length : 3;
-    for (int i = 0; i < previewCount; i++) {
+    final previewCount = finalDraws.length < 3 ? finalDraws.length : 3;
+    for (var i = 0; i < previewCount; i++) {
       print(finalDraws[i].toJsonLString());
     }
     print('--------------------------------------');
