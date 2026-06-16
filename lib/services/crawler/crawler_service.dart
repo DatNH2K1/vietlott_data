@@ -1,4 +1,5 @@
 import 'package:vietlott_data/models/lottery_draw_model.dart';
+import 'package:vietlott_data/repositories/lottery_repository.dart';
 import 'package:vietlott_data/services/crawler/adapters/base_adapters.dart';
 import 'package:vietlott_data/services/crawler/adapters/git_sync_adapter.dart';
 import 'package:vietlott_data/services/crawler/adapters/mega645_adapter.dart';
@@ -33,18 +34,20 @@ class SyncManager {
   // Singleton pattern
   static final SyncManager instance = SyncManager._init();
 
-  dynamic _lotteryRepo;
+  LotteryRepository? _lotteryRepo;
 
   /// Initializes the SyncManager with a repository instance to avoid direct dependency on sqflite.
-  void init(dynamic repository) {
+  // ignore: use_setters_to_change_properties
+  void init(LotteryRepository repository) {
     _lotteryRepo = repository;
   }
 
-  dynamic get _repo {
-    if (_lotteryRepo == null) {
+  LotteryRepository get _repo {
+    final repo = _lotteryRepo;
+    if (repo == null) {
       throw StateError('SyncManager has not been initialized with a repository. Call SyncManager.instance.init(lotteryRepository) first.');
     }
-    return _lotteryRepo;
+    return repo;
   }
 
   final List<BaseSyncAdapter> _adapters = [
@@ -63,7 +66,7 @@ class SyncManager {
       final product = adapter.productName;
 
       try {
-        final isEmpty = await _repo.isProductEmpty(product) as bool;
+        final isEmpty = await _repo.isProductEmpty(product);
         if (isEmpty) {
           print(
             'Local database for "$product" is empty. Initializing sync from Git...',
@@ -103,7 +106,7 @@ class SyncManager {
       return;
     }
 
-    final latestLocalDraws = await _repo.getDraws(productName, limit: 1) as List<LotteryDrawModel>;
+    final latestLocalDraws = await _repo.getDraws(productName, limit: 1);
     final latestLocalId = latestLocalDraws.isNotEmpty ? latestLocalDraws.first.id : null;
 
     var pageIndex = 1;

@@ -57,6 +57,27 @@ class AppLocalizations {
   String get appInfo => translate('appInfo');
   String get version => translate('version');
   String get appDisclaimer => translate('appDisclaimer');
+  String get suggestions => translate('suggestions');
+  String get suggestionTitle => translate('suggestionTitle');
+  String get selectProduct => translate('selectProduct');
+  String get selectInterval => translate('selectInterval');
+  String get allTime => translate('allTime');
+  String get last30Draws => translate('last30Draws');
+  String get last5Draws => translate('last5Draws');
+  String get criteriaWeights => translate('criteriaWeights');
+  String get coldNumbers => translate('coldNumbers');
+  String get oddEven => translate('oddEven');
+  String get frequency => translate('frequency');
+  String get trend => translate('trend');
+  String get regionBalance => translate('regionBalance');
+  String get frequentPairs => translate('frequentPairs');
+  String get generate => translate('generate');
+  String get suggestedNumbers => translate('suggestedNumbers');
+  String get noDataToAnalyze => translate('noDataToAnalyze');
+  String get mlModelTitle => translate('mlModelTitle');
+  String get mlModelDesc => translate('mlModelDesc');
+  String get analyzingMl => translate('analyzingMl');
+  String get regenerate => translate('regenerate');
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

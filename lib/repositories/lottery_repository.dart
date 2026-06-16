@@ -193,7 +193,6 @@ class LotteryRepository {
 
   /// Helper to get a human-readable display name for a lottery product.
   String _getDisplayName(String product) {
-    if (product == 'power535') return 'Lotto 5/35';
     return product.toUpperCase();
   }
 }

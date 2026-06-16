@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vietlott_data/features/home/product_history_page.dart';
+import 'package:vietlott_data/features/home/suggestion_view.dart';
 import 'package:vietlott_data/features/home/widgets/draw_card.dart';
 import 'package:vietlott_data/features/home/widgets/shimmer_loading.dart';
 import 'package:vietlott_data/models/lottery_draw_model.dart';
@@ -28,7 +29,7 @@ class _DrawHistoryPageState extends State<DrawHistoryPage> {
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: const [HomeView(), SettingsView()],
+        children: const [HomeView(), SuggestionView(), SettingsView()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -44,6 +45,11 @@ class _DrawHistoryPageState extends State<DrawHistoryPage> {
             icon: const Icon(Icons.dashboard_outlined),
             activeIcon: const Icon(Icons.dashboard),
             label: localizations.translate('appTitle'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.auto_awesome_outlined),
+            activeIcon: const Icon(Icons.auto_awesome),
+            label: localizations.suggestions,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.settings_outlined),

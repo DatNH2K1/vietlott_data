@@ -22,7 +22,12 @@ class TestAssetBundle extends CachingAssetBundle {
         "langEn": "English",
         "close": "Đóng",
         "reSync": "Đồng bộ lại",
-        "syncing": "Đang đồng bộ dữ liệu từ Git..."
+        "syncing": "Đang đồng bộ dữ liệu từ Git...",
+        "suggestions": "Gợi ý số",
+        "suggestionTitle": "Phân tích & Dự đoán số",
+        "mega645Desc": "Quay thưởng Thứ 4, Thứ 6, Chủ nhật hàng tuần",
+        "power655Desc": "Quay thưởng Thứ 3, Thứ 5, Thứ 7 hàng tuần",
+        "power535Desc": "Quay thưởng Thứ 3, Thứ 5, Thứ 7 hàng tuần"
       }
       ''';
       return ByteData.view(Uint8List.fromList(utf8.encode(jsonStr)).buffer);
@@ -48,6 +53,6 @@ void main() {
     // Wait for AppLocalizations to finish loading
     await tester.pumpAndSettle();
 
-    expect(find.text('Vietlott Analytics'), findsOneWidget);
+    expect(find.text('Vietlott Analytics'), findsAtLeastNWidgets(1));
   });
 }

@@ -95,7 +95,6 @@ class _ProductHistoryPageState extends State<ProductHistoryPage> {
   }
 
   String _getDisplayName(String product) {
-    if (product == 'power535') return 'Max 3D Pro';
     return product.toUpperCase();
   }
 
