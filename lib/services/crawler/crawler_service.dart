@@ -1,5 +1,4 @@
 import 'package:vietlott_data/models/lottery_draw_model.dart';
-import 'package:vietlott_data/repositories/lottery_repository.dart';
 import 'package:vietlott_data/services/crawler/adapters/base_adapters.dart';
 import 'package:vietlott_data/services/crawler/adapters/git_sync_adapter.dart';
 import 'package:vietlott_data/services/crawler/adapters/mega645_adapter.dart';
@@ -34,6 +33,20 @@ class SyncManager {
   // Singleton pattern
   static final SyncManager instance = SyncManager._init();
 
+  dynamic _lotteryRepo;
+
+  /// Initializes the SyncManager with a repository instance to avoid direct dependency on sqflite.
+  void init(dynamic repository) {
+    _lotteryRepo = repository;
+  }
+
+  dynamic get _repo {
+    if (_lotteryRepo == null) {
+      throw StateError('SyncManager has not been initialized with a repository. Call SyncManager.instance.init(lotteryRepository) first.');
+    }
+    return _lotteryRepo;
+  }
+
   final List<BaseSyncAdapter> _adapters = [
     GitSyncAdapter('power535'),
     GitSyncAdapter('mega645'),
@@ -46,13 +59,11 @@ class SyncManager {
   /// Synchronizes lottery draws from Git to SQLite for any registered product
   /// whose database table has 0 records (i.e. fresh install or cleared database).
   Future<void> syncIfEmpty() async {
-    final lotteryRepo = LotteryRepository();
-
     for (final adapter in _adapters) {
       final product = adapter.productName;
 
       try {
-        final isEmpty = await lotteryRepo.isProductEmpty(product);
+        final isEmpty = await _repo.isProductEmpty(product) as bool;
         if (isEmpty) {
           print(
             'Local database for "$product" is empty. Initializing sync from Git...',
@@ -64,7 +75,7 @@ class SyncManager {
           );
 
           if (draws.isNotEmpty) {
-            await lotteryRepo.insertDraws(product, draws);
+            await _repo.insertDraws(product, draws);
             print(
               'Inserted ${draws.length} draws into local SQLite database for "$product".',
             );
@@ -92,8 +103,7 @@ class SyncManager {
       return;
     }
 
-    final lotteryRepo = LotteryRepository();
-    final latestLocalDraws = await lotteryRepo.getDraws(productName, limit: 1);
+    final latestLocalDraws = await _repo.getDraws(productName, limit: 1) as List<LotteryDrawModel>;
     final latestLocalId = latestLocalDraws.isNotEmpty ? latestLocalDraws.first.id : null;
 
     var pageIndex = 1;
@@ -133,14 +143,14 @@ class SyncManager {
       }
 
       if (allNewDraws.isNotEmpty) {
-        await lotteryRepo.insertDraws(productName, allNewDraws.reversed.toList());
+        await _repo.insertDraws(productName, allNewDraws.reversed.toList());
         print('Successfully crawled and inserted ${allNewDraws.length} new draws for "$productName".');
       } else {
         print('No new draws found for "$productName".');
       }
 
       // Always update last_updated so we don't query again too soon
-      await lotteryRepo.updateLastUpdated(productName);
+      await _repo.updateLastUpdated(productName);
     } catch (e) {
       print('Error crawling latest data for "$productName": $e');
     }

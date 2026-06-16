@@ -79,6 +79,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
+    SyncManager.instance.init(_lotteryRepo);
     _loadAndSyncData();
   }
 
