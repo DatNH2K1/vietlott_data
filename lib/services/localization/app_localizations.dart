@@ -78,6 +78,7 @@ class AppLocalizations {
   String get mlModelDesc => translate('mlModelDesc');
   String get analyzingMl => translate('analyzingMl');
   String get regenerate => translate('regenerate');
+  String get lastUpdated => translate('lastUpdated');
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -10,6 +10,7 @@ class DrawCard extends StatelessWidget {
     required this.draw,
     required this.productName,
     required this.index,
+    this.lastUpdated,
     this.onTap,
     super.key,
   });
@@ -17,6 +18,7 @@ class DrawCard extends StatelessWidget {
   final LotteryDrawModel draw;
   final String productName;
   final int index;
+  final DateTime? lastUpdated;
   final VoidCallback? onTap;
 
   @override
@@ -53,6 +55,15 @@ class DrawCard extends StatelessWidget {
         }
       } catch (_) {}
       return rawDate;
+    }
+
+    // Last updated formatting helper
+    String formatLastUpdated(DateTime dt) {
+      final hour = dt.hour.toString().padLeft(2, '0');
+      final minute = dt.minute.toString().padLeft(2, '0');
+      final day = dt.day.toString().padLeft(2, '0');
+      final month = dt.month.toString().padLeft(2, '0');
+      return '$hour:$minute $day/$month';
     }
 
     var ballAnimIndex = 0;
@@ -169,31 +180,65 @@ class DrawCard extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Bottom Row: Date
+              // Bottom Row: Date & Last Updated
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today_outlined,
-                        size: 14,
-                        color: isDark
-                            ? const Color(0xFF64748B)
-                            : const Color(0xFF94A3B8),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        formatDate(draw.date),
-                        style: TextStyle(
-                          color: isDark
-                              ? const Color(0xFF94A3B8)
-                              : const Color(0xFF64748B),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
+                  Expanded(
+                    child: Wrap(
+                      spacing: 12,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.calendar_today_outlined,
+                              size: 14,
+                              color: isDark
+                                  ? const Color(0xFF64748B)
+                                  : const Color(0xFF94A3B8),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              formatDate(draw.date),
+                              style: TextStyle(
+                                color: isDark
+                                    ? const Color(0xFF94A3B8)
+                                    : const Color(0xFF64748B),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                        if (lastUpdated != null)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.sync_outlined,
+                                size: 14,
+                                color: isDark
+                                    ? const Color(0xFF64748B)
+                                    : const Color(0xFF94A3B8),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${localizations.lastUpdated}${formatLastUpdated(lastUpdated!)}',
+                                style: TextStyle(
+                                  color: isDark
+                                      ? const Color(0xFF64748B)
+                                      : const Color(0xFF94A3B8),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
                   ),
                   Icon(
                     Icons.chevron_right,

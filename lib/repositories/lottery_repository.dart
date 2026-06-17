@@ -23,8 +23,9 @@ class LotteryRepository {
   /// Batch inserts a list of draws and their numbers for a specific product in chunks.
   Future<void> insertDraws(
     String productName,
-    List<LotteryDrawModel> draws,
-  ) async {
+    List<LotteryDrawModel> draws, {
+    bool setLastUpdated = true,
+  }) async {
     if (draws.isEmpty) return;
 
     final db = await _dbService.database;
@@ -35,14 +36,16 @@ class LotteryRepository {
       'name': _getDisplayName(productName),
     }, conflictAlgorithm: ConflictAlgorithm.ignore);
 
-    // Update last_updated timestamp
-    final nowString = DateTime.now().toIso8601String();
-    await db.update(
-      'lottery_products',
-      {'last_updated': nowString},
-      where: 'id = ?',
-      whereArgs: [productName],
-    );
+    // Update last_updated timestamp if requested
+    if (setLastUpdated) {
+      final nowString = DateTime.now().toIso8601String();
+      await db.update(
+        'lottery_products',
+        {'last_updated': nowString},
+        where: 'id = ?',
+        whereArgs: [productName],
+      );
+    }
 
     // Split inserts into chunked transactions of 500 draws to optimize transaction overhead and memory usage
     const chunkSize = 500;

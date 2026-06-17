@@ -45,5 +45,6 @@
   "mlModelTitle": "Local Machine Learning Model",
   "mlModelDesc": "The system automatically uses optimal weights trained directly on the full draw history. The Pearson correlation algorithm balances criteria: Frequency (Hot/Cold), Trend, Region Balance, and Frequent Pairs to provide the best suggestion.",
   "analyzingMl": "Analyzing machine learning data...",
-  "regenerate": "Suggest another set"
+  "regenerate": "Suggest another set",
+  "lastUpdated": "Updated: "
 }

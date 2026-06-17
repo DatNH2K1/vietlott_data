@@ -76,6 +76,7 @@ class _HomeViewState extends State<HomeView> {
   bool _isLoading = true;
   String? _errorMessage;
   final Map<String, List<LotteryDrawModel>> _productDraws = {};
+  final Map<String, DateTime?> _productLastUpdated = {};
   final LotteryRepository _lotteryRepo = LotteryRepository();
 
   final List<String> _products = SyncManager.instance.adapters
@@ -108,6 +109,8 @@ class _HomeViewState extends State<HomeView> {
       for (final product in _products) {
         final draws = await _lotteryRepo.getDraws(product, limit: 1);
         _productDraws[product] = draws;
+        final lastUpdated = await _lotteryRepo.getLastUpdated(product);
+        _productLastUpdated[product] = lastUpdated;
       }
 
       if (!forceRefresh) {
@@ -144,9 +147,11 @@ class _HomeViewState extends State<HomeView> {
     try {
       await SyncManager.instance.crawlLatestData(product);
       final draws = await _lotteryRepo.getDraws(product, limit: 1);
+      final lastUpdated = await _lotteryRepo.getLastUpdated(product);
       if (mounted) {
         setState(() {
           _productDraws[product] = draws;
+          _productLastUpdated[product] = lastUpdated;
         });
       }
     } catch (e) {
@@ -226,10 +231,12 @@ class _HomeViewState extends State<HomeView> {
                   ),
                   ..._products.expand((product) {
                     final draws = _productDraws[product] ?? [];
+                    final lastUpdated = _productLastUpdated[product];
                     return draws.map((draw) {
                       return DrawCard(
                         draw: draw,
                         productName: product,
+                        lastUpdated: lastUpdated,
                         index:
                             _products.indexOf(product) * 3 +
                             draws.indexOf(draw),

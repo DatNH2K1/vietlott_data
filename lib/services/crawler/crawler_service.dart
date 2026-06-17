@@ -78,7 +78,7 @@ class SyncManager {
           );
 
           if (draws.isNotEmpty) {
-            await _repo.insertDraws(product, draws);
+            await _repo.insertDraws(product, draws, setLastUpdated: false);
             print(
               'Inserted ${draws.length} draws into local SQLite database for "$product".',
             );
@@ -109,7 +109,7 @@ class SyncManager {
     final latestLocalDraws = await _repo.getDraws(productName, limit: 1);
     final latestLocalId = latestLocalDraws.isNotEmpty ? latestLocalDraws.first.id : null;
 
-    var pageIndex = 1;
+    var pageIndex = 0;
     final allNewDraws = <LotteryDrawModel>[];
     var hasNewData = true;
 
