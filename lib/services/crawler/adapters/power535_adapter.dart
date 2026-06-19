@@ -5,8 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:vietlott_data/models/lottery_draw_model.dart';
 import 'package:vietlott_data/services/crawler/adapters/base_adapters.dart';
 
-/// Crawler adapter for Vietlott Product 535 (Power 5/35 / Max 3D Pro).
-class Power535Adapter implements BaseCrawlerAdapter {
+/// Crawler adapter for Vietlott Product 535 (Power 5/35).
+class Power535Adapter extends BaseCrawlerAdapter {
   @override
   String get productName => 'power535';
 
@@ -189,4 +189,15 @@ class Power535Adapter implements BaseCrawlerAdapter {
     }
     return null;
   }
+
+  @override
+  bool shouldAlertJackpot(int jackpot) {
+    return jackpot >= 12000000000;
+  }
+
+  @override
+  String get jackpotAlertTitleKey => 'jackpotAlertTitle_power535';
+
+  @override
+  String get jackpotAlertBodyKey => 'jackpotAlertBody_power535';
 }

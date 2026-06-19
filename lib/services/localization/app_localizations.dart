@@ -87,6 +87,10 @@ class AppLocalizations {
   String get appUpToDate => translate('appUpToDate');
   String get checkUpdateError => translate('checkUpdateError');
   String get checkUpdate => translate('checkUpdate');
+  String get batteryOptTitle => translate('batteryOptTitle');
+  String get batteryOptMessage => translate('batteryOptMessage');
+  String get batteryOptDisableBtn => translate('batteryOptDisableBtn');
+  String get batteryOptLaterBtn => translate('batteryOptLaterBtn');
 
   String translateWithParam(String key, String paramKey, String paramValue) {
     final raw = translate(key);

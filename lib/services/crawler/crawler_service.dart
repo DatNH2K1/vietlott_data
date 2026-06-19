@@ -1,5 +1,3 @@
-import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' show parse;
 import 'package:vietlott_data/models/lottery_draw_model.dart';
 import 'package:vietlott_data/repositories/lottery_repository.dart';
 import 'package:vietlott_data/services/crawler/adapters/base_adapters.dart';
@@ -7,6 +5,7 @@ import 'package:vietlott_data/services/crawler/adapters/git_sync_adapter.dart';
 import 'package:vietlott_data/services/crawler/adapters/mega645_adapter.dart';
 import 'package:vietlott_data/services/crawler/adapters/power535_adapter.dart';
 import 'package:vietlott_data/services/crawler/adapters/power655_adapter.dart';
+import 'package:vietlott_data/services/notification/notification_service.dart';
 
 export 'adapters/base_adapters.dart';
 export 'adapters/mega645_adapter.dart';
@@ -182,6 +181,16 @@ class SyncManager {
         if (jackpot != null) {
           await _repo.updateJackpot(productName, jackpot);
           print('Successfully updated jackpot for $productName: $jackpot');
+
+          // Fetch the latest draw ID from the database to supply to the notification rules
+          final draws = await _repo.getDraws(productName, limit: 1);
+          final latestDrawId = draws.isNotEmpty ? draws.first.id : '0';
+
+          await NotificationService.instance.processJackpotAlerts(
+            product: productName,
+            jackpot: jackpot,
+            drawId: latestDrawId,
+          );
         } else {
           print('No jackpot value returned for $productName.');
         }

@@ -54,5 +54,14 @@
   "checkingUpdate": "Checking for updates...",
   "appUpToDate": "App is up to date",
   "checkUpdateError": "Could not check for updates. Please try again.",
-  "checkUpdate": "Check for updates"
+  "checkUpdate": "Check for updates",
+  "batteryOptTitle": "Disable battery optimization?",
+  "batteryOptMessage": "To automatically update Vietlott draw results every 6 hours even when the app is closed, please disable battery optimization for this app.",
+  "batteryOptDisableBtn": "Disable",
+  "batteryOptLaterBtn": "Later",
+  "jackpotAlertTitle_power535": "Massive Power 5/35 Jackpot! 💰",
+  "jackpotAlertBody_power535": "Jackpot reached {jackpot} VNĐ (Draw #{drawId}). Play today!",
+  "billionSuffix": "Billion",
+  "notificationChannelName": "Jackpot Alerts",
+  "notificationChannelDesc": "Notifications for high jackpot alerts"
 }

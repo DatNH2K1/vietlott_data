@@ -54,5 +54,14 @@
   "checkingUpdate": "Đang kiểm tra bản cập nhật...",
   "appUpToDate": "Ứng dụng đang ở phiên bản mới nhất",
   "checkUpdateError": "Không thể kiểm tra cập nhật. Vui lòng thử lại sau.",
-  "checkUpdate": "Kiểm tra cập nhật"
+  "checkUpdate": "Kiểm tra cập nhật",
+  "batteryOptTitle": "Tắt tối ưu hoá pin?",
+  "batteryOptMessage": "Để cập nhật kết quả Vietlott tự động cứ mỗi 6 giờ ngay cả khi không mở ứng dụng, vui lòng tắt chế độ tối ưu hóa pin cho ứng dụng này.",
+  "batteryOptDisableBtn": "Tắt tối ưu hóa",
+  "batteryOptLaterBtn": "Để sau",
+  "jackpotAlertTitle_power535": "Jackpot Power 5/35 cực khủng! 💰",
+  "jackpotAlertBody_power535": "Jackpot đã đạt {jackpot} VNĐ (Kỳ quay #{drawId}). Đừng bỏ lỡ cơ hội hôm nay!",
+  "billionSuffix": "Tỷ",
+  "notificationChannelName": "Cảnh báo Jackpot",
+  "notificationChannelDesc": "Thông báo khi giá trị Jackpot đạt mốc đặc biệt"
 }

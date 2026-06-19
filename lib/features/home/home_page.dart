@@ -1,15 +1,19 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vietlott_data/features/home/product_history_page.dart';
 import 'package:vietlott_data/features/home/suggestion_view.dart';
+import 'package:vietlott_data/features/home/widgets/battery_optimization_dialog.dart';
 import 'package:vietlott_data/features/home/widgets/draw_card.dart';
 import 'package:vietlott_data/features/home/widgets/shimmer_loading.dart';
 import 'package:vietlott_data/models/lottery_draw_model.dart';
 import 'package:vietlott_data/repositories/lottery_repository.dart';
+import 'package:vietlott_data/services/background/background_sync_service.dart';
 import 'package:vietlott_data/services/crawler/crawler_service.dart';
 import 'package:vietlott_data/services/localization/app_localizations.dart';
 import 'package:vietlott_data/services/settings/app_settings.dart';
+import 'package:vietlott_data/services/settings/battery_optimization_service.dart';
 import 'package:vietlott_data/services/theme/app_themes.dart';
 import 'package:vietlott_data/services/update/update_service.dart';
 
@@ -26,9 +30,30 @@ class _DrawHistoryPageState extends State<DrawHistoryPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      UpdateService.instance.checkAndShowUpdateDialog(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await UpdateService.instance.checkAndShowUpdateDialog(context);
+      await _checkBatteryAndSync();
     });
+  }
+
+  Future<void> _checkBatteryAndSync() async {
+    final isIgnoring = await BatteryOptimizationService.instance.isIgnoringBatteryOptimizations();
+    if (isIgnoring) {
+      await BackgroundSyncService.instance.register6HourPeriodicTask();
+    } else {
+      await BackgroundSyncService.instance.cancelPeriodicTask();
+      final shouldPrompt = await BatteryOptimizationService.instance.shouldPromptForBatteryOptimization();
+      if (shouldPrompt && mounted) {
+        await BatteryOptimizationService.instance.markPrompted();
+        if (!mounted) return;
+        await BatteryOptimizationDialog.show(
+          context,
+          onConfirm: () async {
+            await BatteryOptimizationService.instance.requestIgnoreBatteryOptimizations();
+          },
+        );
+      }
+    }
   }
 
   @override

@@ -12,6 +12,18 @@ class AppSettings extends ChangeNotifier {
   AppThemeMode get themeMode => _themeMode;
   Locale get locale => _locale;
 
+  static const String prefKeyLanguageCode = 'languageCode';
+  static const String defaultLanguageCode = 'vi';
+
+  static Future<String> getSavedLanguageCode() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString(prefKeyLanguageCode) ?? defaultLanguageCode;
+    } catch (_) {
+      return defaultLanguageCode;
+    }
+  }
+
   Future<void> _loadFromPrefs() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -23,7 +35,7 @@ class AppSettings extends ChangeNotifier {
         _themeMode = AppThemeMode.values[themeIndex];
       }
 
-      final languageCode = prefs.getString('languageCode');
+      final languageCode = prefs.getString(prefKeyLanguageCode);
       if (languageCode != null) {
         _locale = Locale(languageCode);
       }
@@ -53,7 +65,7 @@ class AppSettings extends ChangeNotifier {
       notifyListeners();
       try {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('languageCode', locale.languageCode);
+        await prefs.setString(prefKeyLanguageCode, locale.languageCode);
       } catch (e) {
         print('Error saving locale settings: $e');
       }

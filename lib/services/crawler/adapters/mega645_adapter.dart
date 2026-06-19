@@ -6,7 +6,7 @@ import 'package:vietlott_data/models/lottery_draw_model.dart';
 import 'package:vietlott_data/services/crawler/adapters/base_adapters.dart';
 
 /// Crawler adapter for Vietlott Product 645 (Mega 6/45).
-class Mega645Adapter implements BaseCrawlerAdapter {
+class Mega645Adapter extends BaseCrawlerAdapter {
   @override
   String get productName => 'mega645';
 

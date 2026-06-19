@@ -6,7 +6,7 @@ import 'package:vietlott_data/models/lottery_draw_model.dart';
 import 'package:vietlott_data/services/crawler/adapters/base_adapters.dart';
 
 /// Crawler adapter for Vietlott Product 655 (Power 6/55).
-class Power655Adapter implements BaseCrawlerAdapter {
+class Power655Adapter extends BaseCrawlerAdapter {
   @override
   String get productName => 'power655';
 
