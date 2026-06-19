@@ -46,5 +46,13 @@
   "mlModelDesc": "Hệ thống tự động sử dụng bộ trọng số tối ưu được huấn luyện trực tiếp trên toàn bộ lịch sử các kỳ quay. Thuật toán phân tích tương quan Pearson sẽ cân bằng giữa các yếu tố: Tần suất (Hot/Cold), Xu hướng, Cân bằng vùng và Sự liên kết giữa các cặp số để đưa ra gợi ý tốt nhất cho bạn.",
   "analyzingMl": "Đang phân tích dữ liệu học máy...",
   "regenerate": "Gợi ý số khác",
-  "lastUpdated": "Cập nhật: "
+  "lastUpdated": "Cập nhật: ",
+  "updateAvailable": "Đã có phiên bản mới",
+  "updateMessage": "Phiên bản mới v{version} đã sẵn sàng. Bạn có muốn cập nhật ngay không?",
+  "updateBtn": "Cập nhật",
+  "updateLater": "Để sau",
+  "checkingUpdate": "Đang kiểm tra bản cập nhật...",
+  "appUpToDate": "Ứng dụng đang ở phiên bản mới nhất",
+  "checkUpdateError": "Không thể kiểm tra cập nhật. Vui lòng thử lại sau.",
+  "checkUpdate": "Kiểm tra cập nhật"
 }

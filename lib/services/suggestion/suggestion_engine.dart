@@ -7,15 +7,11 @@ import 'package:vietlott_data/services/suggestion/adapters/power535_suggestion_a
 import 'package:vietlott_data/services/suggestion/adapters/power655_suggestion_adapter.dart';
 import 'package:vietlott_data/services/suggestion/suggestion_config.dart';
 
-enum FrequencyInterval {
-  allTime,
-  last30,
-  last5,
-}
+enum FrequencyInterval { allTime, last30, last5 }
 
 class SuggestionEngine {
   SuggestionEngine({LotteryRepository? repository})
-      : _repository = repository ?? LotteryRepository();
+    : _repository = repository ?? LotteryRepository();
 
   final LotteryRepository _repository;
 
@@ -62,19 +58,27 @@ class SuggestionEngine {
 
     final combinedSpecialScores = <int, double>{};
     if (adapter.hasSpecialNumber) {
-      for (var num = adapter.specialMinNumber; num <= adapter.specialMaxNumber; num++) {
+      for (
+        var num = adapter.specialMinNumber;
+        num <= adapter.specialMaxNumber;
+        num++
+      ) {
         combinedSpecialScores[num] = 0.0;
       }
     }
 
-    final criteriaMethods = <String, Map<int, double> Function(List<LotteryDrawModel>, {bool isSpecial})>{
-      'cold_numbers': adapter.calculateColdNumbers,
-      'odd_even': adapter.calculateOddEven,
-      'frequency': adapter.calculateFrequency,
-      'trend': adapter.calculateTrend,
-      'region_balance': adapter.calculateRegionBalance,
-      'frequent_pairs': adapter.calculateFrequentPairs,
-    };
+    final criteriaMethods =
+        <
+          String,
+          Map<int, double> Function(List<LotteryDrawModel>, {bool isSpecial})
+        >{
+          'cold_numbers': adapter.calculateColdNumbers,
+          'odd_even': adapter.calculateOddEven,
+          'frequency': adapter.calculateFrequency,
+          'trend': adapter.calculateTrend,
+          'region_balance': adapter.calculateRegionBalance,
+          'frequent_pairs': adapter.calculateFrequentPairs,
+        };
 
     var totalWeight = 0.0;
     for (final criteriaEntry in criteriaMethods.entries) {
@@ -93,14 +97,20 @@ class SuggestionEngine {
         final regularScores = method(historySlice);
         for (var num = adapter.minNumber; num <= adapter.maxNumber; num++) {
           final score = regularScores[num] ?? 0.0;
-          combinedRegularScores[num] = combinedRegularScores[num]! + (score * weight);
+          combinedRegularScores[num] =
+              combinedRegularScores[num]! + (score * weight);
         }
 
         if (adapter.hasSpecialNumber) {
           final specialScores = method(historySlice, isSpecial: true);
-          for (var num = adapter.specialMinNumber; num <= adapter.specialMaxNumber; num++) {
+          for (
+            var num = adapter.specialMinNumber;
+            num <= adapter.specialMaxNumber;
+            num++
+          ) {
             final score = specialScores[num] ?? 0.0;
-            combinedSpecialScores[num] = combinedSpecialScores[num]! + (score * weight);
+            combinedSpecialScores[num] =
+                combinedSpecialScores[num]! + (score * weight);
           }
         }
       }
@@ -115,8 +125,15 @@ class SuggestionEngine {
       }
 
       if (adapter.hasSpecialNumber) {
-        final specialScores = adapter.calculateFrequency(historyAll, isSpecial: true);
-        for (var num = adapter.specialMinNumber; num <= adapter.specialMaxNumber; num++) {
+        final specialScores = adapter.calculateFrequency(
+          historyAll,
+          isSpecial: true,
+        );
+        for (
+          var num = adapter.specialMinNumber;
+          num <= adapter.specialMaxNumber;
+          num++
+        ) {
           final score = specialScores[num] ?? 0.0;
           combinedSpecialScores[num] = score;
         }
@@ -160,8 +177,13 @@ class SuggestionEngine {
 
     if (adapter.hasSpecialNumber) {
       final specialPool = <int>[];
-      for (var num = adapter.specialMinNumber; num <= adapter.specialMaxNumber; num++) {
-        if (adapter.specialMaxNumber == adapter.maxNumber && selected.contains(num)) {
+      for (
+        var num = adapter.specialMinNumber;
+        num <= adapter.specialMaxNumber;
+        num++
+      ) {
+        if (adapter.specialMaxNumber == adapter.maxNumber &&
+            selected.contains(num)) {
           continue;
         }
         specialPool.add(num);

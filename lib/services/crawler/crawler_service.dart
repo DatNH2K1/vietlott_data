@@ -45,7 +45,9 @@ class SyncManager {
   LotteryRepository get _repo {
     final repo = _lotteryRepo;
     if (repo == null) {
-      throw StateError('SyncManager has not been initialized with a repository. Call SyncManager.instance.init(lotteryRepository) first.');
+      throw StateError(
+        'SyncManager has not been initialized with a repository. Call SyncManager.instance.init(lotteryRepository) first.',
+      );
     }
     return repo;
   }
@@ -107,7 +109,9 @@ class SyncManager {
     }
 
     final latestLocalDraws = await _repo.getDraws(productName, limit: 1);
-    final latestLocalId = latestLocalDraws.isNotEmpty ? latestLocalDraws.first.id : null;
+    final latestLocalId = latestLocalDraws.isNotEmpty
+        ? latestLocalDraws.first.id
+        : null;
 
     var pageIndex = 0;
     final allNewDraws = <LotteryDrawModel>[];
@@ -118,7 +122,9 @@ class SyncManager {
         print('Crawling page $pageIndex for "$productName"...');
         final draws = await adapter.fetchPage(pageIndex);
         if (draws.isEmpty) {
-          print('No draws returned on page $pageIndex for "$productName". Stopping.');
+          print(
+            'No draws returned on page $pageIndex for "$productName". Stopping.',
+          );
           break;
         }
 
@@ -147,7 +153,9 @@ class SyncManager {
 
       if (allNewDraws.isNotEmpty) {
         await _repo.insertDraws(productName, allNewDraws.reversed.toList());
-        print('Successfully crawled and inserted ${allNewDraws.length} new draws for "$productName".');
+        print(
+          'Successfully crawled and inserted ${allNewDraws.length} new draws for "$productName".',
+        );
       } else {
         print('No new draws found for "$productName".');
       }

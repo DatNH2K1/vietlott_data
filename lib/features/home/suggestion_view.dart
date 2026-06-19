@@ -44,7 +44,9 @@ class _SuggestionViewState extends State<SuggestionView> {
           _isGenerating = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${AppLocalizations.of(context).errorOccurred}$e')),
+          SnackBar(
+            content: Text('${AppLocalizations.of(context).errorOccurred}$e'),
+          ),
         );
       }
     }
@@ -58,8 +60,16 @@ class _SuggestionViewState extends State<SuggestionView> {
 
     final products = [
       {'id': 'mega645', 'name': 'Mega 6/45', 'desc': localizations.mega645Desc},
-      {'id': 'power655', 'name': 'Power 6/55', 'desc': localizations.power655Desc},
-      {'id': 'power535', 'name': 'Lotto 5/35', 'desc': localizations.power535Desc},
+      {
+        'id': 'power655',
+        'name': 'Power 6/55',
+        'desc': localizations.power655Desc,
+      },
+      {
+        'id': 'power535',
+        'name': 'Lotto 5/35',
+        'desc': localizations.power535Desc,
+      },
     ];
 
     return Scaffold(
@@ -79,7 +89,9 @@ class _SuggestionViewState extends State<SuggestionView> {
             const SizedBox(height: 10),
             Container(
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                color: isDark
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.all(4),
@@ -98,15 +110,19 @@ class _SuggestionViewState extends State<SuggestionView> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
-                          color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+                          color: isSelected
+                              ? theme.colorScheme.primary
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: isSelected
                               ? [
                                   BoxShadow(
-                                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                                    color: theme.colorScheme.primary.withValues(
+                                      alpha: 0.3,
+                                    ),
                                     blurRadius: 6,
                                     offset: const Offset(0, 2),
-                                  )
+                                  ),
                                 ]
                               : null,
                         ),
@@ -118,7 +134,9 @@ class _SuggestionViewState extends State<SuggestionView> {
                               fontWeight: FontWeight.bold,
                               color: isSelected
                                   ? Colors.white
-                                  : (isDark ? Colors.grey[400] : Colors.grey[700]),
+                                  : (isDark
+                                        ? Colors.grey[400]
+                                        : Colors.grey[700]),
                             ),
                           ),
                         ),
@@ -169,7 +187,9 @@ class _SuggestionViewState extends State<SuggestionView> {
                             localizations.mlModelDesc,
                             style: TextStyle(
                               fontSize: 13,
-                              color: isDark ? Colors.grey[300] : Colors.grey[700],
+                              color: isDark
+                                  ? Colors.grey[300]
+                                  : Colors.grey[700],
                               height: 1.45,
                             ),
                           ),
@@ -186,10 +206,14 @@ class _SuggestionViewState extends State<SuggestionView> {
             if (_isGenerating)
               Card(
                 elevation: 0,
-                color: theme.colorScheme.primaryContainer.withValues(alpha: 0.1),
+                color: theme.colorScheme.primaryContainer.withValues(
+                  alpha: 0.1,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.2)),
+                  side: BorderSide(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                  ),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 32),
@@ -214,7 +238,9 @@ class _SuggestionViewState extends State<SuggestionView> {
                 elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
+                  side: BorderSide(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(20),
@@ -239,10 +265,14 @@ class _SuggestionViewState extends State<SuggestionView> {
                           spacing: 8,
                           runSpacing: 8,
                           alignment: WrapAlignment.center,
-                          children: List.generate(_suggestedNumbers!.length, (index) {
+                          children: List.generate(_suggestedNumbers!.length, (
+                            index,
+                          ) {
                             final number = _suggestedNumbers![index];
-                            final isPower535Special = _selectedProduct == 'power535' && index >= 5;
-                            final isPower655Special = _selectedProduct == 'power655' && index >= 6;
+                            final isPower535Special =
+                                _selectedProduct == 'power535' && index >= 5;
+                            final isPower655Special =
+                                _selectedProduct == 'power655' && index >= 6;
                             return BallWidget(
                               number: number,
                               isSpecial: isPower535Special || isPower655Special,
@@ -255,13 +285,24 @@ class _SuggestionViewState extends State<SuggestionView> {
                       OutlinedButton.icon(
                         onPressed: _generate,
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.5)),
-                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          side: BorderSide(
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        icon: Icon(Icons.refresh_rounded, size: 18, color: theme.colorScheme.primary),
+                        icon: Icon(
+                          Icons.refresh_rounded,
+                          size: 18,
+                          color: theme.colorScheme.primary,
+                        ),
                         label: Text(
                           localizations.regenerate,
                           style: TextStyle(
@@ -275,10 +316,10 @@ class _SuggestionViewState extends State<SuggestionView> {
                   ),
                 ),
               ).animate().fade().scale(
-                    begin: const Offset(0.95, 0.95),
-                    curve: Curves.easeOutQuad,
-                    duration: 350.ms,
-                  )
+                begin: const Offset(0.95, 0.95),
+                curve: Curves.easeOutQuad,
+                duration: 350.ms,
+              )
             else
               ElevatedButton(
                 onPressed: _generate,
@@ -293,7 +334,10 @@ class _SuggestionViewState extends State<SuggestionView> {
                 ),
                 child: Text(
                   localizations.generate,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             const SizedBox(height: 32),

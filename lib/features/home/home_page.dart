@@ -11,6 +11,7 @@ import 'package:vietlott_data/services/crawler/crawler_service.dart';
 import 'package:vietlott_data/services/localization/app_localizations.dart';
 import 'package:vietlott_data/services/settings/app_settings.dart';
 import 'package:vietlott_data/services/theme/app_themes.dart';
+import 'package:vietlott_data/services/update/update_service.dart';
 
 class DrawHistoryPage extends StatefulWidget {
   const DrawHistoryPage({super.key});
@@ -21,6 +22,14 @@ class DrawHistoryPage extends StatefulWidget {
 
 class _DrawHistoryPageState extends State<DrawHistoryPage> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      UpdateService.instance.checkAndShowUpdateDialog(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +140,8 @@ class _HomeViewState extends State<HomeView> {
     for (final product in _products) {
       try {
         final lastUpdated = await _lotteryRepo.getLastUpdated(product);
-        final shouldUpdate = lastUpdated == null ||
+        final shouldUpdate =
+            lastUpdated == null ||
             DateTime.now().difference(lastUpdated).inHours >= 6;
 
         if (shouldUpdate) {
@@ -390,11 +400,41 @@ class SettingsView extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // Info section
-          _buildSectionHeader(
-            theme,
-            localizations.appInfo,
+          // Update section
+          _buildSectionHeader(theme, localizations.checkUpdate),
+          Card(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: BorderSide(
+                color: isDark
+                    ? const Color(0xFF334155)
+                    : const Color(0xFFE2E8F0),
+              ),
+            ),
+            child: ListTile(
+              title: Text(
+                localizations.checkUpdate,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              onTap: () {
+                HapticFeedback.lightImpact();
+                UpdateService.instance.checkAndShowUpdateDialog(
+                  context,
+                  showUpToDateFeedback: true,
+                );
+              },
+            ),
           ),
+          const SizedBox(height: 24),
+
+          // Info section
+          _buildSectionHeader(theme, localizations.appInfo),
           Card(
             elevation: 0,
             shape: RoundedRectangleBorder(

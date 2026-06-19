@@ -16,7 +16,7 @@ class ProductHistoryPage extends StatefulWidget {
 class _ProductHistoryPageState extends State<ProductHistoryPage> {
   final LotteryRepository _lotteryRepo = LotteryRepository();
   final ScrollController _scrollController = ScrollController();
-  
+
   bool _isLoading = true;
   bool _isLoadingMore = false;
   bool _hasMore = true;
@@ -39,7 +39,8 @@ class _ProductHistoryPageState extends State<ProductHistoryPage> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 400) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 400) {
       _loadHistory();
     }
   }
@@ -165,9 +166,7 @@ class _ProductHistoryPageState extends State<ProductHistoryPage> {
                   if (index == _draws.length) {
                     return const Padding(
                       padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      child: Center(child: CircularProgressIndicator()),
                     );
                   }
                   final draw = _draws[index];

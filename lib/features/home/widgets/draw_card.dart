@@ -109,9 +109,7 @@ class DrawCard extends StatelessWidget {
                     child: Text(
                       productDisplay,
                       style: TextStyle(
-                        color: isDark
-                            ? const Color(0xFFF1F5F9)
-                            : productCol,
+                        color: isDark ? const Color(0xFFF1F5F9) : productCol,
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
                       ),

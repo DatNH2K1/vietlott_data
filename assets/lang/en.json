@@ -46,5 +46,13 @@
   "mlModelDesc": "The system automatically uses optimal weights trained directly on the full draw history. The Pearson correlation algorithm balances criteria: Frequency (Hot/Cold), Trend, Region Balance, and Frequent Pairs to provide the best suggestion.",
   "analyzingMl": "Analyzing machine learning data...",
   "regenerate": "Suggest another set",
-  "lastUpdated": "Updated: "
+  "lastUpdated": "Updated: ",
+  "updateAvailable": "New Version Available",
+  "updateMessage": "Version v{version} is available. Would you like to update now?",
+  "updateBtn": "Update",
+  "updateLater": "Later",
+  "checkingUpdate": "Checking for updates...",
+  "appUpToDate": "App is up to date",
+  "checkUpdateError": "Could not check for updates. Please try again.",
+  "checkUpdate": "Check for updates"
 }

@@ -10,7 +10,10 @@ abstract class BaseProductSuggestionAdapter {
   int get specialMinNumber => minNumber;
   int get specialMaxNumber => maxNumber;
 
-  Map<int, double> calculateColdNumbers(List<LotteryDrawModel> history, {bool isSpecial = false}) {
+  Map<int, double> calculateColdNumbers(
+    List<LotteryDrawModel> history, {
+    bool isSpecial = false,
+  }) {
     final scores = <int, double>{};
     if (history.isEmpty) return scores;
 
@@ -26,7 +29,8 @@ abstract class BaseProductSuggestionAdapter {
       final draw = history[i];
       final numbersInDraw = isSpecial ? draw.special : draw.regular;
       for (final num in numbersInDraw) {
-        if (lastSeenIndex.containsKey(num) && lastSeenIndex[num] == history.length) {
+        if (lastSeenIndex.containsKey(num) &&
+            lastSeenIndex[num] == history.length) {
           lastSeenIndex[num] = i;
         }
       }
@@ -53,7 +57,10 @@ abstract class BaseProductSuggestionAdapter {
     return scores;
   }
 
-  Map<int, double> calculateOddEven(List<LotteryDrawModel> history, {bool isSpecial = false}) {
+  Map<int, double> calculateOddEven(
+    List<LotteryDrawModel> history, {
+    bool isSpecial = false,
+  }) {
     final scores = <int, double>{};
     if (history.isEmpty) return scores;
 
@@ -95,7 +102,10 @@ abstract class BaseProductSuggestionAdapter {
     return scores;
   }
 
-  Map<int, double> calculateFrequency(List<LotteryDrawModel> history, {bool isSpecial = false}) {
+  Map<int, double> calculateFrequency(
+    List<LotteryDrawModel> history, {
+    bool isSpecial = false,
+  }) {
     final scores = <int, double>{};
     if (history.isEmpty) return scores;
 
@@ -137,7 +147,10 @@ abstract class BaseProductSuggestionAdapter {
     return scores;
   }
 
-  Map<int, double> calculateTrend(List<LotteryDrawModel> history, {bool isSpecial = false}) {
+  Map<int, double> calculateTrend(
+    List<LotteryDrawModel> history, {
+    bool isSpecial = false,
+  }) {
     final scores = <int, double>{};
     if (history.isEmpty) return scores;
 
@@ -210,7 +223,10 @@ abstract class BaseProductSuggestionAdapter {
     return scores;
   }
 
-  Map<int, double> calculateRegionBalance(List<LotteryDrawModel> history, {bool isSpecial = false}) {
+  Map<int, double> calculateRegionBalance(
+    List<LotteryDrawModel> history, {
+    bool isSpecial = false,
+  }) {
     final scores = <int, double>{};
     if (history.isEmpty) return scores;
 
@@ -303,7 +319,10 @@ abstract class BaseProductSuggestionAdapter {
     return scores;
   }
 
-  Map<int, double> calculateFrequentPairs(List<LotteryDrawModel> history, {bool isSpecial = false}) {
+  Map<int, double> calculateFrequentPairs(
+    List<LotteryDrawModel> history, {
+    bool isSpecial = false,
+  }) {
     final scores = <int, double>{};
     if (history.isEmpty) return scores;
 
@@ -341,7 +360,8 @@ abstract class BaseProductSuggestionAdapter {
         for (var j = i + 1; j < drawNums.length; j++) {
           final n1 = drawNums[i];
           final n2 = drawNums[j];
-          if (coOccurrence.containsKey(n1) && coOccurrence[n1]!.containsKey(n2)) {
+          if (coOccurrence.containsKey(n1) &&
+              coOccurrence[n1]!.containsKey(n2)) {
             coOccurrence[n1]![n2] = coOccurrence[n1]![n2]! + 1;
             coOccurrence[n2]![n1] = coOccurrence[n2]![n1]! + 1;
           }

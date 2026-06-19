@@ -79,6 +79,19 @@ class AppLocalizations {
   String get analyzingMl => translate('analyzingMl');
   String get regenerate => translate('regenerate');
   String get lastUpdated => translate('lastUpdated');
+
+  String get updateAvailable => translate('updateAvailable');
+  String get updateBtn => translate('updateBtn');
+  String get updateLater => translate('updateLater');
+  String get checkingUpdate => translate('checkingUpdate');
+  String get appUpToDate => translate('appUpToDate');
+  String get checkUpdateError => translate('checkUpdateError');
+  String get checkUpdate => translate('checkUpdate');
+
+  String translateWithParam(String key, String paramKey, String paramValue) {
+    final raw = translate(key);
+    return raw.replaceAll('{$paramKey}', paramValue);
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
