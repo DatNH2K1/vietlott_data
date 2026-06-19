@@ -7,6 +7,9 @@ abstract class BaseCrawlerAdapter {
 
   /// Fetches a specific page of draw history.
   Future<List<LotteryDrawModel>> fetchPage(int pageIndex);
+
+  /// Fetches the latest jackpot value from the Vietlott homepage.
+  Future<int?> fetchJackpot();
 }
 
 /// Interface representing a Git sync adapter for a specific lottery product.

@@ -87,6 +87,10 @@ void main() {
           isNot(equals(initialLastUpdated)),
         );
 
+        // Verify Repository getJackpot method
+        final jackpotVal = await lotteryRepo.getJackpot(product);
+        expect(jackpotVal, equals(30000000000));
+
         // Verify no longer empty
         final nowEmpty = await lotteryRepo.isProductEmpty(product);
         expect(nowEmpty, isFalse);

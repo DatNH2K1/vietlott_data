@@ -153,4 +153,40 @@ class Power535Adapter implements BaseCrawlerAdapter {
 
     return results;
   }
+
+  @override
+  Future<int?> fetchJackpot() async {
+    try {
+      final url = Uri.parse(
+        'https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/535.html',
+      );
+      final response = await http.get(url, headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:128.0) Gecko/20100101 Firefox/128.0',
+      });
+
+      if (response.statusCode != 200) return null;
+
+      final document = parse(response.body);
+      final ths = document.querySelectorAll('th');
+      for (final th in ths) {
+        final t = th.text.trim();
+        if (t == 'Giải Độc Đắc' || t == 'Giải Độc đắc' || t == 'Độc đắc') {
+          final sibling = th.nextElementSibling;
+          if (sibling != null) {
+            final cleanText = sibling.text
+                .replaceAll('VNĐ', '')
+                .replaceAll('VND', '')
+                .replaceAll('.', '')
+                .replaceAll(',', '')
+                .trim();
+            return int.tryParse(cleanText);
+          }
+        }
+      }
+    } catch (e) {
+      print('Error fetching Lotto 5/35 jackpot: $e');
+    }
+    return null;
+  }
 }

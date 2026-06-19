@@ -96,13 +96,37 @@ class LotteryRepository {
   Future<void> updateJackpot(String productName, int jackpot) async {
     final db = await _dbService.database;
     final nowString = DateTime.now().toIso8601String();
+    
+    // Ensure the product exists first
+    await db.insert('lottery_products', {
+      'id': productName,
+      'name': _getDisplayName(productName),
+    }, conflictAlgorithm: ConflictAlgorithm.ignore);
+
     await db.update(
       'lottery_products',
-      {'jackpot': jackpot, 'last_updated': nowString},
+      {
+        'jackpot': jackpot,
+        'last_updated': nowString,
+      },
       where: 'id = ?',
       whereArgs: [productName],
     );
   }
+
+  /// Retrieves the jackpot value for a specific product.
+  Future<int?> getJackpot(String productName) async {
+    final db = await _dbService.database;
+    final result = await db.query(
+      'lottery_products',
+      columns: ['jackpot'],
+      where: 'id = ?',
+      whereArgs: [productName],
+    );
+    if (result.isEmpty) return null;
+    return result.first['jackpot'] as int?;
+  }
+
 
   /// Retrieves a paginated list of draws and their numbers for a specific product, ordered by date descending.
   Future<List<LotteryDrawModel>> getDraws(
@@ -117,7 +141,7 @@ class LotteryRepository {
       'lottery_draws',
       where: 'product_id = ?',
       whereArgs: [productName],
-      orderBy: 'draw_date DESC',
+      orderBy: 'CAST(draw_id AS INTEGER) DESC',
       limit: limit,
       offset: offset,
     );

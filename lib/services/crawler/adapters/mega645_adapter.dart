@@ -128,4 +128,39 @@ class Mega645Adapter implements BaseCrawlerAdapter {
 
     return results;
   }
+
+  @override
+  Future<int?> fetchJackpot() async {
+    try {
+      final url = Uri.parse(
+        'https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/645.html',
+      );
+      final response = await http.get(url, headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:128.0) Gecko/20100101 Firefox/128.0',
+      });
+
+      if (response.statusCode != 200) return null;
+
+      final document = parse(response.body);
+      final divs = document.querySelectorAll('div');
+      for (final div in divs) {
+        if (div.text.trim() == 'Giá trị Jackpot') {
+          final sibling = div.nextElementSibling;
+          if (sibling != null) {
+            final cleanText = sibling.text
+                .replaceAll('VNĐ', '')
+                .replaceAll('VND', '')
+                .replaceAll('.', '')
+                .replaceAll(',', '')
+                .trim();
+            return int.tryParse(cleanText);
+          }
+        }
+      }
+    } catch (e) {
+      print('Error fetching Mega 6/45 jackpot: $e');
+    }
+    return null;
+  }
 }

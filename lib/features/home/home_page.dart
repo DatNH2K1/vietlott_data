@@ -86,6 +86,7 @@ class _HomeViewState extends State<HomeView> {
   String? _errorMessage;
   final Map<String, List<LotteryDrawModel>> _productDraws = {};
   final Map<String, DateTime?> _productLastUpdated = {};
+  final Map<String, int?> _productJackpots = {};
   final LotteryRepository _lotteryRepo = LotteryRepository();
 
   final List<String> _products = SyncManager.instance.adapters
@@ -108,11 +109,13 @@ class _HomeViewState extends State<HomeView> {
 
     try {
       if (forceRefresh) {
+        await SyncManager.instance.syncJackpots();
         for (final product in _products) {
           await SyncManager.instance.crawlLatestData(product);
         }
       } else {
         await SyncManager.instance.syncIfEmpty();
+        await SyncManager.instance.syncJackpots();
       }
 
       for (final product in _products) {
@@ -120,6 +123,7 @@ class _HomeViewState extends State<HomeView> {
         _productDraws[product] = draws;
         final lastUpdated = await _lotteryRepo.getLastUpdated(product);
         _productLastUpdated[product] = lastUpdated;
+        _productJackpots[product] = await _lotteryRepo.getJackpot(product);
       }
 
       if (!forceRefresh) {
@@ -137,6 +141,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Future<void> _checkAndCrawlLatestInBackground() async {
+    var jackpotsSynced = false;
     for (final product in _products) {
       try {
         final lastUpdated = await _lotteryRepo.getLastUpdated(product);
@@ -145,6 +150,10 @@ class _HomeViewState extends State<HomeView> {
             DateTime.now().difference(lastUpdated).inHours >= 6;
 
         if (shouldUpdate) {
+          if (!jackpotsSynced) {
+            await SyncManager.instance.syncJackpots();
+            jackpotsSynced = true;
+          }
           unawaited(_crawlProductInBackground(product));
         }
       } catch (e) {
@@ -158,10 +167,12 @@ class _HomeViewState extends State<HomeView> {
       await SyncManager.instance.crawlLatestData(product);
       final draws = await _lotteryRepo.getDraws(product, limit: 1);
       final lastUpdated = await _lotteryRepo.getLastUpdated(product);
+      final jackpot = await _lotteryRepo.getJackpot(product);
       if (mounted) {
         setState(() {
           _productDraws[product] = draws;
           _productLastUpdated[product] = lastUpdated;
+          _productJackpots[product] = jackpot;
         });
       }
     } catch (e) {
@@ -242,11 +253,13 @@ class _HomeViewState extends State<HomeView> {
                   ..._products.expand((product) {
                     final draws = _productDraws[product] ?? [];
                     final lastUpdated = _productLastUpdated[product];
+                    final jackpot = _productJackpots[product];
                     return draws.map((draw) {
                       return DrawCard(
                         draw: draw,
                         productName: product,
                         lastUpdated: lastUpdated,
+                        jackpot: jackpot,
                         index:
                             _products.indexOf(product) * 3 +
                             draws.indexOf(draw),

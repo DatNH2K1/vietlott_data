@@ -1,3 +1,5 @@
+import 'package:http/http.dart' as http;
+import 'package:html/parser.dart' show parse;
 import 'package:vietlott_data/models/lottery_draw_model.dart';
 import 'package:vietlott_data/repositories/lottery_repository.dart';
 import 'package:vietlott_data/services/crawler/adapters/base_adapters.dart';
@@ -164,6 +166,28 @@ class SyncManager {
       await _repo.updateLastUpdated(productName);
     } catch (e) {
       print('Error crawling latest data for "$productName": $e');
+    }
+  }
+
+  /// Iterates through all registered crawler adapters to fetch their latest
+  /// jackpot values and update them in the local SQLite database.
+  Future<void> syncJackpots() async {
+    for (final productName in LotteryCrawler.supportedProducts) {
+      final adapter = LotteryCrawler.getAdapter(productName);
+      if (adapter == null) continue;
+
+      try {
+        print('Fetching jackpot for $productName using adapter...');
+        final jackpot = await adapter.fetchJackpot();
+        if (jackpot != null) {
+          await _repo.updateJackpot(productName, jackpot);
+          print('Successfully updated jackpot for $productName: $jackpot');
+        } else {
+          print('No jackpot value returned for $productName.');
+        }
+      } catch (e) {
+        print('Error syncing jackpot for $productName: $e');
+      }
     }
   }
 }

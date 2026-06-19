@@ -11,6 +11,7 @@ class DrawCard extends StatelessWidget {
     required this.productName,
     required this.index,
     this.lastUpdated,
+    this.jackpot,
     this.onTap,
     super.key,
   });
@@ -19,6 +20,7 @@ class DrawCard extends StatelessWidget {
   final String productName;
   final int index;
   final DateTime? lastUpdated;
+  final int? jackpot;
   final VoidCallback? onTap;
 
   @override
@@ -64,6 +66,15 @@ class DrawCard extends StatelessWidget {
       final day = dt.day.toString().padLeft(2, '0');
       final month = dt.month.toString().padLeft(2, '0');
       return '$hour:$minute $day/$month';
+    }
+
+    // Jackpot formatting helper
+    String formatJackpot(int val) {
+      if (val >= 1000000000) {
+        final billions = val / 1000000000;
+        return '${billions.toStringAsFixed(3).replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '')} Tỷ VNĐ';
+      }
+      return '${val.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} VNĐ';
     }
 
     var ballAnimIndex = 0;
@@ -127,6 +138,39 @@ class DrawCard extends StatelessWidget {
                   ),
                 ],
               ),
+              if (jackpot != null && jackpot! > 0) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.monetization_on,
+                        size: 18,
+                        color: Color(0xFFFFB300), // Nice gold color
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Jackpot: ${formatJackpot(jackpot!)}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 13.5,
+                            color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF334155),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               const SizedBox(height: 16),
 
               // Middle Row: Winning Balls
