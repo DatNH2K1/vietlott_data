@@ -63,5 +63,7 @@
   "jackpotAlertBody_power535": "Jackpot đã đạt {jackpot} VNĐ (Kỳ quay #{drawId}). Đừng bỏ lỡ cơ hội hôm nay!",
   "billionSuffix": "Tỷ",
   "notificationChannelName": "Cảnh báo Jackpot",
-  "notificationChannelDesc": "Thông báo khi giá trị Jackpot đạt mốc đặc biệt"
+  "notificationChannelDesc": "Thông báo khi giá trị Jackpot đạt mốc đặc biệt",
+  "themeCyberMidnight": "Tím Cyberpunk",
+  "themeNordicMint": "Bạc hà Nordic"
 }

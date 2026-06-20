@@ -63,5 +63,7 @@
   "jackpotAlertBody_power535": "Jackpot reached {jackpot} VNĐ (Draw #{drawId}). Play today!",
   "billionSuffix": "Billion",
   "notificationChannelName": "Jackpot Alerts",
-  "notificationChannelDesc": "Notifications for high jackpot alerts"
+  "notificationChannelDesc": "Notifications for high jackpot alerts",
+  "themeCyberMidnight": "Cyber Midnight",
+  "themeNordicMint": "Nordic Mint"
 }

@@ -90,11 +90,17 @@ class _SuggestionViewState extends State<SuggestionView> {
             Container(
               decoration: BoxDecoration(
                 color: isDark
-                    ? const Color(0xFF1E293B)
-                    : const Color(0xFFF1F5F9),
-                borderRadius: BorderRadius.circular(12),
+                    ? const Color(0xFF151821).withValues(alpha: 0.8)
+                    : const Color(0xFFF1F5F9).withValues(alpha: 0.8),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isDark
+                      ? const Color(0xFF222F43).withValues(alpha: 0.5)
+                      : const Color(0xFFE2E8F0).withValues(alpha: 0.5),
+                  width: 1.2,
+                ),
               ),
-              padding: const EdgeInsets.all(4),
+              padding: const EdgeInsets.all(6),
               child: Row(
                 children: products.map((p) {
                   final isSelected = _selectedProduct == p['id'];
@@ -113,15 +119,15 @@ class _SuggestionViewState extends State<SuggestionView> {
                           color: isSelected
                               ? theme.colorScheme.primary
                               : Colors.transparent,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(12),
                           boxShadow: isSelected
                               ? [
                                   BoxShadow(
                                     color: theme.colorScheme.primary.withValues(
-                                      alpha: 0.3,
+                                      alpha: 0.25,
                                     ),
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 2),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
                                   ),
                                 ]
                               : null,
@@ -131,7 +137,7 @@ class _SuggestionViewState extends State<SuggestionView> {
                             p['name']!,
                             style: TextStyle(
                               fontSize: 13,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w800,
                               color: isSelected
                                   ? Colors.white
                                   : (isDark
@@ -152,13 +158,13 @@ class _SuggestionViewState extends State<SuggestionView> {
             Card(
               elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.25),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
                   width: 1.5,
                 ),
               ),
-              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.05),
+              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.04),
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Row(
@@ -178,7 +184,7 @@ class _SuggestionViewState extends State<SuggestionView> {
                             localizations.mlModelTitle,
                             style: TextStyle(
                               fontSize: 15,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w800,
                               color: theme.colorScheme.primary,
                             ),
                           ),
@@ -190,7 +196,7 @@ class _SuggestionViewState extends State<SuggestionView> {
                               color: isDark
                                   ? Colors.grey[300]
                                   : Colors.grey[700],
-                              height: 1.45,
+                              height: 1.5,
                             ),
                           ),
                         ],
@@ -199,7 +205,20 @@ class _SuggestionViewState extends State<SuggestionView> {
                   ],
                 ),
               ),
-            ),
+            )
+                .animate(onPlay: (controller) => controller.repeat(reverse: true))
+                .boxShadow(
+                  begin: BoxShadow(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.02),
+                    blurRadius: 4,
+                  ),
+                  end: BoxShadow(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                    blurRadius: 14,
+                  ),
+                  duration: 2500.ms,
+                  curve: Curves.easeInOut,
+                ),
             const SizedBox(height: 24),
 
             // 3. Suggestions Result or Action Button
@@ -321,25 +340,51 @@ class _SuggestionViewState extends State<SuggestionView> {
                 duration: 350.ms,
               )
             else
-              ElevatedButton(
-                onPressed: _generate,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: LinearGradient(
+                    colors: [
+                      theme.colorScheme.primary,
+                      theme.colorScheme.secondary,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  elevation: 2,
+                  boxShadow: [
+                    BoxShadow(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  localizations.generate,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                child: ElevatedButton(
+                  onPressed: _generate,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    foregroundColor: Colors.white,
+                    shadowColor: Colors.transparent,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: Text(
+                    localizations.generate,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
                   ),
                 ),
-              ),
+              )
+                  .animate(onPlay: (controller) => controller.repeat())
+                  .shimmer(
+                    duration: 2500.ms,
+                    color: Colors.white.withValues(alpha: 0.25),
+                  ),
             const SizedBox(height: 32),
           ],
         ),

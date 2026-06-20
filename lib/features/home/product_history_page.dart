@@ -102,7 +102,15 @@ class _ProductHistoryPageState extends State<ProductHistoryPage> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final displayName = _getDisplayName(widget.productName);
+
+    final accentColor = widget.productName == 'power655'
+        ? const Color(0xFFDC2626)
+        : widget.productName == 'power535'
+            ? const Color(0xFFFF8F00)
+            : const Color(0xFF1E88E5);
 
     return Scaffold(
       appBar: AppBar(
@@ -156,27 +164,75 @@ class _ProductHistoryPageState extends State<ProductHistoryPage> {
                 ],
               ),
             )
-          : RefreshIndicator(
-              onRefresh: () => _loadHistory(isInitial: true),
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: const EdgeInsets.all(16),
-                itemCount: _draws.length + (_hasMore ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index == _draws.length) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
-                  final draw = _draws[index];
-                  return DrawCard(
-                    draw: draw,
-                    productName: widget.productName,
-                    index: index,
-                  );
-                },
-              ),
+          : Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(18),
+                  margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 4),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: isDark
+                          ? [accentColor.withValues(alpha: 0.2), const Color(0xFF151821)]
+                          : [accentColor.withValues(alpha: 0.12), Colors.white],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: accentColor.withValues(alpha: 0.3),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'KỲ QUAY THƯỞNG GẦN ĐÂY',
+                        style: TextStyle(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.2,
+                          color: accentColor,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Xem lịch sử kết quả quay thưởng cho sản phẩm $displayName. Dữ liệu được đồng bộ tự động từ máy chủ Vietlott.',
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          height: 1.45,
+                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () => _loadHistory(isInitial: true),
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      itemCount: _draws.length + (_hasMore ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == _draws.length) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+                        final draw = _draws[index];
+                        return DrawCard(
+                          draw: draw,
+                          productName: widget.productName,
+                          index: index,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
     );
   }

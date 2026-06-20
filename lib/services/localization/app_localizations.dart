@@ -46,6 +46,8 @@ class AppLocalizations {
   String get themeLightRed => translate('themeLightRed');
   String get themeDarkSlate => translate('themeDarkSlate');
   String get themeGoldLuxury => translate('themeGoldLuxury');
+  String get themeCyberMidnight => translate('themeCyberMidnight');
+  String get themeNordicMint => translate('themeNordicMint');
   String get langVi => translate('langVi');
   String get langEn => translate('langEn');
   String get close => translate('close');

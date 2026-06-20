@@ -80,12 +80,11 @@ class DrawCard extends StatelessWidget {
     var ballAnimIndex = 0;
 
     final cardWidget = Card(
-      elevation: 0,
-      margin: const EdgeInsets.only(bottom: 14),
+      margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         side: BorderSide(
-          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+          color: isDark ? const Color(0xFF222F43) : const Color(0xFFF1EFE9),
         ),
       ),
       child: InkWell(
@@ -93,9 +92,9 @@ class DrawCard extends StatelessWidget {
           HapticFeedback.lightImpact();
           onTap?.call();
         },
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         child: Padding(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -105,32 +104,32 @@ class DrawCard extends StatelessWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
+                      horizontal: 12,
+                      vertical: 6,
                     ),
                     decoration: BoxDecoration(
                       color: isDark
-                          ? productCol.withValues(alpha: 0.25)
+                          ? productCol.withValues(alpha: 0.2)
                           : productSoftCol,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: productCol.withValues(alpha: 0.3),
+                        color: productCol.withValues(alpha: 0.35),
                       ),
                     ),
                     child: Text(
                       productDisplay,
                       style: TextStyle(
                         color: isDark ? const Color(0xFFF1F5F9) : productCol,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 12.5,
                       ),
                     ),
                   ),
                   Text(
                     '${localizations.drawNumber}${draw.id}',
                     style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13.5,
                       color: isDark
                           ? const Color(0xFF94A3B8)
                           : const Color(0xFF64748B),
@@ -139,36 +138,78 @@ class DrawCard extends StatelessWidget {
                 ],
               ),
               if (jackpot != null && jackpot! > 0) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
-                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(
+                      colors: isDark
+                          ? [
+                              const Color(0xFF2D220C),
+                              const Color(0xFF1E1404),
+                            ]
+                          : [
+                              const Color(0xFFFEF3C7),
+                              const Color(0xFFFDE68A),
+                            ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                      color: isDark
+                          ? const Color(0xFFD4AF37).withValues(alpha: 0.3)
+                          : const Color(0xFFF59E0B).withValues(alpha: 0.25),
+                      width: 1.2,
                     ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.monetization_on,
-                        size: 18,
-                        color: Color(0xFFFFB300), // Nice gold color
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD4AF37).withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.monetization_on,
+                          size: 18,
+                          color: Color(0xFFD4AF37),
+                        ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 14),
                       Expanded(
-                        child: Text(
-                          'Jackpot: ${formatJackpot(jackpot!)}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 13.5,
-                            color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF334155),
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'JACKPOT ESTIMATE',
+                              style: TextStyle(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.8,
+                                color: isDark ? const Color(0xFFF5E0A3) : const Color(0xFFB58920),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              formatJackpot(jackpot!),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 16,
+                                color: isDark ? const Color(0xFFFDE68A) : const Color(0xFF78350F),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
+                )
+                .animate(onPlay: (controller) => controller.repeat())
+                .shimmer(
+                  duration: 2.seconds,
+                  color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.3),
                 ),
               ],
               const SizedBox(height: 16),
@@ -297,11 +338,7 @@ class DrawCard extends StatelessWidget {
       ),
     );
 
-    if (index >= 8) {
-      return cardWidget;
-    }
-
-    return cardWidget
+    var animatedCard = cardWidget
         .animate()
         .fade(duration: 300.ms, delay: (index * 80).ms)
         .slideY(
@@ -311,5 +348,25 @@ class DrawCard extends StatelessWidget {
           duration: 400.ms,
           delay: (index * 80).ms,
         );
+
+    if (jackpot != null && jackpot! > 0) {
+      animatedCard = animatedCard
+          .animate(onPlay: (controller) => controller.repeat(reverse: true))
+          .boxShadow(
+            begin: BoxShadow(
+              color: productCol.withValues(alpha: 0.04),
+              blurRadius: 10,
+            ),
+            end: BoxShadow(
+              color: productCol.withValues(alpha: 0.22),
+              blurRadius: 22,
+              spreadRadius: 1.5,
+            ),
+            duration: 2500.ms,
+            curve: Curves.easeInOut,
+          );
+    }
+
+    return animatedCard;
   }
 }

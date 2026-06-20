@@ -22,52 +22,60 @@ class BallWidget extends StatelessWidget {
     final numberStr = number.toString().padLeft(2, '0');
 
     // Premium gradients based on type and theme mode
-    final Gradient gradient;
+    final RadialGradient gradient;
     if (isSpecial) {
-      gradient = const LinearGradient(
-        colors: [Color(0xFFFBBF24), Color(0xFFD97706)], // Vibrant gold to amber
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
+      gradient = const RadialGradient(
+        colors: [
+          Color(0xFFFEF08A),
+          Color(0xFFEAB308),
+          Color(0xFF854D0E),
+        ],
+        center: Alignment(-0.3, -0.3),
+        focal: Alignment(-0.1, -0.1),
+        radius: 0.65,
       );
     } else {
-      gradient = LinearGradient(
+      gradient = RadialGradient(
         colors: isDark
-            ? [
-                const Color(0xFF38BDF8),
-                const Color(0xFF0284C7),
-              ] // Slate mode sky blue
+            ? const [
+                Color(0xFFBAE6FD),
+                Color(0xFF0284C7),
+                Color(0xFF075985),
+              ]
             : [
+                const Color(0xFFFECDD3),
                 theme.colorScheme.primary,
-                theme.colorScheme.primary.withValues(alpha: 0.85),
+                const Color(0xFF881337),
               ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
+        center: const Alignment(-0.3, -0.3),
+        focal: const Alignment(-0.1, -0.1),
+        radius: 0.65,
       );
     }
 
     final shadowColor = isSpecial
-        ? const Color(0xFFD97706).withValues(alpha: 0.3)
+        ? const Color(0xFFD97706).withValues(alpha: 0.35)
         : (isDark ? const Color(0xFF0284C7) : theme.colorScheme.primary)
-              .withValues(alpha: 0.2);
+              .withValues(alpha: 0.25);
 
-    return Container(
+    var animatedWidget = Container(
           width: size,
           height: size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: gradient,
-            border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 1.2),
             boxShadow: [
               BoxShadow(
                 color: shadowColor,
-                blurRadius: 8,
-                offset: const Offset(0, 3),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
                 spreadRadius: 1,
               ),
               BoxShadow(
-                color: Colors.white.withValues(alpha: 0.2),
+                color: Colors.white.withValues(alpha: 0.3),
                 blurRadius: 2,
-                offset: const Offset(0, -1),
+                offset: const Offset(0.5, 0.5),
               ),
             ],
           ),
@@ -94,9 +102,22 @@ class BallWidget extends StatelessWidget {
         .scale(
           begin: const Offset(0.7, 0.7),
           end: const Offset(1, 1),
-          curve: Curves.easeOutBack,
-          duration: 300.ms,
+          curve: Curves.elasticOut,
+          duration: 600.ms,
           delay: (index * 40).ms,
         );
+
+    if (isSpecial) {
+      animatedWidget = animatedWidget
+          .animate(onPlay: (c) => c.repeat(reverse: true))
+          .scale(
+            begin: const Offset(1, 1),
+            end: const Offset(1.08, 1.08),
+            duration: 1500.ms,
+            curve: Curves.easeInOut,
+          );
+    }
+
+    return animatedWidget;
   }
 }
