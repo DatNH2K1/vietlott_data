@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:vietlott_data/models/lottery_draw_model.dart';
 import 'package:vietlott_data/repositories/lottery_repository.dart';
 import 'package:vietlott_data/services/suggestion/adapters/base_adapters.dart';
 import 'package:vietlott_data/services/suggestion/adapters/mega645_suggestion_adapter.dart';
@@ -30,13 +29,14 @@ class SuggestionEngine {
   Future<List<int>> generateSuggestions({
     required String product,
     Map<String, double>? weights,
+    List<LotteryDrawModel>? customHistory,
   }) async {
     final adapter = getAdapter(product);
     if (adapter == null) return [];
 
     final activeWeights = weights ?? SuggestionConfig.mlWeights[product] ?? {};
 
-    final historyAll = await _repository.getDraws(product);
+    final historyAll = customHistory ?? await _repository.getDraws(product);
     if (historyAll.isEmpty) {
       return [];
     }
@@ -213,5 +213,85 @@ class SuggestionEngine {
     }
 
     return selected;
+  }
+
+  /// Runs a back-test on the last [backTestCount] draws to evaluate the AI suggestion performance.
+  /// Returns a map containing the match statistics (e.g. number of matches per draw, winning categories achieved).
+  Future<Map<String, dynamic>> evaluateAiPerformance({
+    required String product,
+    int backTestCount = 10,
+  }) async {
+    final allHistory = await _repository.getDraws(product);
+    if (allHistory.length <= backTestCount) {
+      return <String, dynamic>{
+        'totalEvaluated': 0,
+        'averageMatches': 0.0,
+        'details': const <Map<String, dynamic>>[],
+      };
+    }
+
+    final adapter = getAdapter(product);
+    if (adapter == null) return <String, dynamic>{};
+
+    final stats = <String, int>{};
+    for (final prizeKey in adapter.calculateWinningProbabilities().keys) {
+      stats[prizeKey] = 0;
+    }
+
+    var totalMatchesCount = 0;
+    var winDrawsCount = 0;
+    final resultsList = <Map<String, dynamic>>[];
+
+    // We evaluate the last `backTestCount` draws
+    for (var i = 0; i < backTestCount; i++) {
+      // The draw we are trying to predict
+      final targetDraw = allHistory[i];
+
+      // The history available prior to this draw (excluding this draw and newer ones)
+      final historyPrior = allHistory.sublist(i + 1);
+
+      // Generate suggestion using the history prior to this draw
+      final suggestion = await generateSuggestions(
+        product: product,
+        customHistory: historyPrior,
+      );
+
+      if (suggestion.isEmpty) continue;
+
+      final matchResult = adapter.evaluateDraw(suggestion, targetDraw);
+
+      if (matchResult.prizeCategory != null) {
+        stats[matchResult.prizeCategory!] =
+            (stats[matchResult.prizeCategory!] ?? 0) + 1;
+      }
+
+      if (matchResult.isWin) {
+        winDrawsCount++;
+      }
+
+      totalMatchesCount += matchResult.regularMatches;
+      resultsList.add({
+        'drawId': targetDraw.id,
+        'date': targetDraw.date,
+        'regularMatches': matchResult.regularMatches,
+        'specialMatch': matchResult.hasSpecialMatch,
+      });
+    }
+
+    var totalPrizeMoney = 0.0;
+    for (final entry in stats.entries) {
+      final prizeValue = adapter.prizeValues[entry.key] ?? 0;
+      totalPrizeMoney += entry.value * prizeValue;
+    }
+    final actualRoi = resultsList.isEmpty ? 0.0 : totalPrizeMoney / (resultsList.length * 10000.0);
+
+    return {
+      'totalEvaluated': resultsList.length,
+      'averageMatches': resultsList.isEmpty ? 0.0 : totalMatchesCount / resultsList.length,
+      'breakEvenRate': resultsList.isEmpty ? 0.0 : winDrawsCount / resultsList.length,
+      'roi': actualRoi,
+      'stats': stats,
+      'details': resultsList,
+    };
   }
 }

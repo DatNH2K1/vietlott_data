@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:vietlott_data/models/lottery_draw_model.dart';
+export 'package:vietlott_data/models/lottery_draw_model.dart';
 
 abstract class BaseProductSuggestionAdapter {
   String get productName;
@@ -9,6 +10,35 @@ abstract class BaseProductSuggestionAdapter {
   bool get hasSpecialNumber;
   int get specialMinNumber => minNumber;
   int get specialMaxNumber => maxNumber;
+
+  Map<String, double> calculateWinningProbabilities();
+  Map<String, int> get prizeValues;
+
+  double get theoreticalBreakEvenRate =>
+      calculateWinningProbabilities().values.reduce((a, b) => a + b);
+
+  double get theoreticalRoi {
+    final probs = calculateWinningProbabilities();
+    var sum = 0.0;
+    for (final entry in probs.entries) {
+      final prize = prizeValues[entry.key] ?? 0;
+      sum += entry.value * (prize / 10000.0);
+    }
+    return sum;
+  }
+
+  MatchResult evaluateDraw(List<int> suggestion, LotteryDrawModel draw);
+
+  double combinations(int n, int k) {
+    if (k < 0 || k > n) return 0;
+    if (k == 0 || k == n) return 1;
+    var result = 1.0;
+    final limit = k < n - k ? k : n - k;
+    for (var i = 1; i <= limit; i++) {
+      result *= (n - limit + i) / i;
+    }
+    return result;
+  }
 
   Map<int, double> calculateColdNumbers(
     List<LotteryDrawModel> history, {
@@ -400,4 +430,18 @@ abstract class BaseProductSuggestionAdapter {
 
     return scores;
   }
+}
+
+class MatchResult {
+  MatchResult({
+    required this.regularMatches,
+    required this.hasSpecialMatch,
+    required this.isWin,
+    this.prizeCategory,
+  });
+
+  final int regularMatches;
+  final bool hasSpecialMatch;
+  final String? prizeCategory;
+  final bool isWin;
 }

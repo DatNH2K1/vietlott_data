@@ -48,6 +48,11 @@ void main() {
       expect(adapter.numbersToSelect, equals(6));
       expect(adapter.hasSpecialNumber, isFalse);
 
+      final probs = adapter.calculateWinningProbabilities();
+      expect(probs.containsKey('jackpot'), isTrue);
+      expect(probs['jackpot'], closeTo(1.227738e-7, 1e-12));
+      expect(probs['first'], closeTo(2.872907e-5, 1e-10));
+
       final coldScores = adapter.calculateColdNumbers(mockHistory);
       expect(coldScores.length, equals(45));
       expect(coldScores[1], lessThan(coldScores[10]!));
@@ -67,6 +72,11 @@ void main() {
       expect(adapter.numbersToSelect, equals(6));
       expect(adapter.hasSpecialNumber, isTrue);
 
+      final probs = adapter.calculateWinningProbabilities();
+      expect(probs.containsKey('jackpot1'), isTrue);
+      expect(probs['jackpot1'], closeTo(3.4495e-8, 1e-12));
+      expect(probs['jackpot2'], closeTo(2.0697e-7, 1e-11));
+
       final regionScores = adapter.calculateRegionBalance(mockHistory);
       expect(regionScores.length, equals(55));
     });
@@ -78,6 +88,10 @@ void main() {
       expect(adapter.maxNumber, equals(35));
       expect(adapter.numbersToSelect, equals(5));
       expect(adapter.hasSpecialNumber, isTrue);
+
+      final probs = adapter.calculateWinningProbabilities();
+      expect(probs['jackpot'], closeTo(2.567006e-7, 1e-12));
+      expect(probs['consolation'], closeTo(0.0455965, 1e-6));
 
       final pairScores = adapter.calculateFrequentPairs(mockHistory);
       expect(pairScores.length, equals(35));
@@ -137,6 +151,29 @@ void main() {
       }
       expect(suggestionsPower535[5], greaterThanOrEqualTo(1));
       expect(suggestionsPower535[5], lessThanOrEqualTo(12));
+    });
+
+    test('SuggestionEngine evaluateAiPerformance back-tests successfully', () async {
+      // Mock history with 15 draws
+      final largeMockHistory = List.generate(15, (index) {
+        return LotteryDrawModel(
+          id: '${15 - index}',
+          date: '2026-06-${15 - index}',
+          regular: [1, 2, 3, 4, 5, 6],
+          special: [7],
+        );
+      });
+      final mockRepo = MockLotteryRepository(largeMockHistory);
+      final engine = SuggestionEngine(repository: mockRepo);
+
+      final eval = await engine.evaluateAiPerformance(
+        product: 'mega645',
+        backTestCount: 5,
+      );
+
+      expect(eval['totalEvaluated'], equals(5));
+      expect(eval.containsKey('stats'), isTrue);
+      expect((eval['stats'] as Map<String, int>).containsKey('jackpot'), isTrue);
     });
   });
 }

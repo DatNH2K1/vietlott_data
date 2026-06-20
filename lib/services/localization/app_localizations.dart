@@ -81,6 +81,14 @@ class AppLocalizations {
   String get analyzingMl => translate('analyzingMl');
   String get regenerate => translate('regenerate');
   String get lastUpdated => translate('lastUpdated');
+  String get theoreticalProbabilities => translate('theoreticalProbabilities');
+  String get aiPerformance => translate('aiPerformance');
+  String get loadingAiPerformance => translate('loadingAiPerformance');
+  String get prizeColumn => translate('prizeColumn');
+  String get theoreticalColumn => translate('theoreticalColumn');
+  String get aiActualColumn => translate('aiActualColumn');
+  String get breakEvenRate => translate('breakEvenRate');
+  String get roiRate => translate('roiRate');
 
   String get updateAvailable => translate('updateAvailable');
   String get updateBtn => translate('updateBtn');
